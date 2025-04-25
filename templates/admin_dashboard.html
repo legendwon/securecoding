@@ -25,6 +25,7 @@
                 <td>{{ '활성' if user.is_active else '휴면' }}</td>
                 <td>
                     <form method="POST" action="{{ url_for('update_balance', user_id=user.id) }}">
+                        {{ balance_form.hidden_tag() }}  <!-- CSRF 토큰 추가 -->
                         <input type="number" name="new_balance" value="{{ user.balance }}" step="0.01" min="0" required>
                         <button type="submit" class="btn btn-primary">잔액 수정</button>
                     </form>
@@ -33,11 +34,13 @@
                     {% if user.is_active %}
                         <!-- 유저가 활성 상태일 때만 휴면 처리 버튼을 표시 -->
                         <form method="POST" action="{{ url_for('deactivate_user', user_id=user.id) }}">
+                            {{ deactivate_form.hidden_tag() }}  <!-- CSRF 토큰 추가 -->
                             <button type="submit" class="btn btn-warning">휴면 처리</button>
                         </form>
                     {% else %}
                         <!-- 유저가 이미 휴면 상태일 때 -->
                         <form method="POST" action="{{ url_for('activate_user', user_id=user.id) }}">
+                            {{ deactivate_form.hidden_tag() }}  <!-- CSRF 토큰 추가 -->
                             <button type="submit" class="btn btn-success">활성화</button>
                         </form>
                     {% endif %}
