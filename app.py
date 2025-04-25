@@ -11,6 +11,8 @@ from wtforms import StringField, PasswordField
 import time
 import datetime
 from flask_talisman import Talisman
+from wtforms import IntegerField
+from wtforms.validators import InputRequired
 
 csrf = CSRFProtect()
 
@@ -39,6 +41,13 @@ class RegistrationForm(FlaskForm):
     password = PasswordField('Password')
 
 
+# 잔액 수정 폼
+class BalanceUpdateForm(FlaskForm):
+    new_balance = IntegerField('New Balance', validators=[InputRequired()])
+
+# 휴면 처리 폼
+class DeactivateUserForm(FlaskForm):
+    pass
 
 app.config['SESSION_COOKIE_HTTPONLY'] = True
 app.config['SESSION_COOKIE_SECURE'] = True  # HTTPS 환경에서만 전송
@@ -682,10 +691,14 @@ def send_private_message(data):
 
 
 
-@app.route('/admin')
+@app.route('/admin', methods=['GET', 'POST'])
 def admin_dashboard():
     if 'user_id' not in session or not is_admin(session['user_id']):
         return redirect(url_for('login'))
+    
+
+    balance_form = BalanceUpdateForm()
+    deactivate_form = DeactivateUserForm()
 
     db = get_db()
     cursor = db.cursor()
@@ -697,7 +710,7 @@ def admin_dashboard():
     cursor.execute("SELECT * FROM product")
     products = cursor.fetchall()
 
-    return render_template('admin_dashboard.html', users=users, products=products)
+    return render_template('admin_dashboard.html', users=users, products=products, balance_form=balance_form, deactivate_form=deactivate_form)
 
 @app.route('/admin/update_balance/<user_id>', methods=['POST'])
 def update_balance(user_id):
