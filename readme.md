@@ -22,15 +22,24 @@ if you don't have a miniconda(or anaconda), you can install it on this url. - ht
 ```
 git clone https://github.com/ugonfor/secure-coding (원본)
 conda env create -f enviroments.yaml
-
-
 ```
 
 
 
-## usage
+# usage
 
-주요 기술 스택
+usage
+run the server process.
+
+python app.py
+if you want to test on external machine, you can utilize the ngrok to forwarding the url.
+
+# optional
+sudo snap install ngrok
+ngrok http 5000
+
+
+##주요 기술 스택
 Flask: Python으로 작성된 웹 프레임워크
 
 Flask-SocketIO: 실시간 웹 소켓을 통한 메시징 시스템 구현
