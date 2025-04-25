@@ -1,0 +1,10 @@
+<form method="GET" action="{{ url_for('search') }}">
+    <input type="text" name="query" placeholder="상품을 검색하세요" required>
+    <button type="submit">검색</button>
+</form>
+
+<ul>
+    {% for product in products %}
+        <li><a href="{{ url_for('view_product', product_id=product.id) }}">{{ product.title }} - {{ product.price }}원</a></li>
+    {% endfor %}
+</ul>

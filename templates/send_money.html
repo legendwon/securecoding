@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block title %}송금하기{% endblock %}
+
+{% block content %}
+<h2>송금하기</h2>
+
+<form method="POST" action="{{ url_for('send_money') }}">
+    <label for="receiver_username">받는 사람 Username:</label>
+    <input type="text" id="receiver_username" name="receiver_username" required>
+    <label for="amount">송금액:</label>
+    <input type="number" id="amount" name="amount" required min="1">
+    <button type="submit">송금</button>
+</form>
+
+
+{% endblock %}

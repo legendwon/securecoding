@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+
+{% block title %}관리자 대시보드{% endblock %}
+
+{% block content %}
+<h2>관리자 대시보드</h2>
+
+<!-- 유저 목록 -->
+<h3>유저 목록</h3>
+<table>
+    <thead>
+        <tr>
+            <th>아이디</th>
+            <th>이름</th>
+            <th>상태</th>
+            <th>잔액</th>
+            <th>휴면 처리</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for user in users %}
+            <tr>
+                <td>{{ user.id }}</td>
+                <td>{{ user.username }}</td>
+                <td>{{ '활성' if user.is_active else '휴면' }}</td>
+                <td>
+                    <form method="POST" action="{{ url_for('update_balance', user_id=user.id) }}">
+                        <input type="number" name="new_balance" value="{{ user.balance }}" step="0.01" min="0" required>
+                        <button type="submit" class="btn btn-primary">잔액 수정</button>
+                    </form>
+                </td>
+                <td>
+                    {% if user.is_active %}
+                        <!-- 유저가 활성 상태일 때만 휴면 처리 버튼을 표시 -->
+                        <form method="POST" action="{{ url_for('deactivate_user', user_id=user.id) }}">
+                            <button type="submit" class="btn btn-warning">휴면 처리</button>
+                        </form>
+                    {% else %}
+                        <!-- 유저가 이미 휴면 상태일 때 -->
+                        <form method="POST" action="{{ url_for('activate_user', user_id=user.id) }}">
+                            <button type="submit" class="btn btn-success">활성화</button>
+                        </form>
+                    {% endif %}
+                </td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<hr>
+
+<!-- 상품 목록 -->
+<h3>상품 목록</h3>
+<table>
+    <thead>
+        <tr>
+            <th>상품명</th>
+            <th>가격</th>
+            <th>등록자</th>
+            <th>삭제</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for product in products %}
+            <tr>
+                <td>{{ product.title }}</td>
+                <td>{{ product.price }}원</td>
+                <td>{{ product.seller_id }}</td>
+                <td>
+                    <form method="POST" action="{{ url_for('delete_product', product_id=product.id) }}">
+                        <button type="submit" class="btn btn-danger">삭제</button>
+                    </form>
+                </td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+{% endblock %}

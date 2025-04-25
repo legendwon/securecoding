@@ -1,0 +1,94 @@
+{% extends "base.html" %}
+
+{% block title %}대시보드{% endblock %}
+
+{% block content %}
+<h2>대시보드</h2>
+
+<!-- 현재 잔액 표시 -->
+<h3>현재 잔액: {{ balance }} 원</h3>
+
+<!-- 상품 검색 기능 -->
+<h3>상품 검색</h3>
+<form method="POST" action="{{ url_for('dashboard') }}">
+  {{ form.hidden_tag() }}  <!-- CSRF 토큰을 숨겨서 추가 -->
+    <label for="product_name">상품 이름:</label>
+    <input type="text" id="product_name" name="product_name" placeholder="상품 이름을 입력하세요">
+    <button type="submit">검색</button>
+</form>
+
+<!-- 검색된 상품 표시 -->
+<ul>
+  {% for product in products %}
+    <li>
+      <a href="{{ url_for('view_product', product_id=product.id) }}">{{ product.title }}</a> 
+      - 가격: {{ product.price }} 원
+    </li>
+  {% endfor %}
+</ul>
+<p>
+  <a href="{{ url_for('new_product') }}">새 상품 등록</a> |
+  <a href="{{ url_for('my_products') }}">내 상품 보러가기</a>
+</p>
+
+<!-- 사용자 검색 기능 -->
+<h3>사용자 검색</h3>
+<form method="POST" action="{{ url_for('dashboard') }}">
+  {{ user_form.hidden_tag() }}  <!-- CSRF 토큰을 숨겨서 추가 -->
+    <label for="username">사용자 이름:</label>
+    <input type="text" id="username" name="username" placeholder="사용자 이름을 입력하세요">
+    <button type="submit">검색</button>
+</form>
+
+<!-- 유저 목록 표시 -->
+<h3>채팅할 상대방을 선택하세요</h3>
+<ul>
+  {% for user in users %}
+    {% if user.id != session['user_id'] %}  <!-- 자신은 제외 -->
+      <li>
+        <a href="{{ url_for('private_chat', receiver_id=user.id) }}">{{ user.username }}</a>
+      </li>
+    {% endif %}
+  {% endfor %}
+</ul>
+
+<!-- 송금 폼 -->
+<h3>송금하기</h3>
+<form method="POST" action="{{ url_for('send_money') }}">
+  {{ csrf_token() }}  <!-- CSRF 토큰 추가 -->
+    <label for="receiver_username">받는 사람 Username:</label>
+    <input type="text" id="receiver_username" name="receiver_username" required>
+    <label for="amount">송금액:</label>
+    <input type="number" id="amount" name="amount" required min="1">
+    <button type="submit">송금</button>
+</form>
+
+<h3>실시간 채팅</h3>
+<div id="chat">
+  <ul id="messages"></ul>
+  <input id="chat_input" type="text" placeholder="메시지를 입력하세요">
+  <button onclick="sendMessage()">전송</button>
+</div>
+
+<script type="text/javascript">
+  var socket = io();
+  socket.on('connect', function() {
+    console.log("채팅 서버에 연결됨");
+  });
+  socket.on('message', function(data) {
+    var messages = document.getElementById('messages');
+    var item = document.createElement('li');
+    item.textContent = data.username + ": " + data.message;
+    messages.appendChild(item);
+    window.scrollTo(0, document.body.scrollHeight);
+  });
+  function sendMessage() {
+    var input = document.getElementById('chat_input');
+    var message = input.value;
+    if (message) {
+      socket.emit('send_message', { 'username': "{{ user.username }}", 'message': message });
+      input.value = "";
+    }
+  }
+</script>
+{% endblock %}
