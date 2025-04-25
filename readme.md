@@ -21,7 +21,8 @@
 - **프로젝트 설정**:  
   아래 명령어를 통해 프로젝트를 클론하고 의존성 패키지를 설치합니다.
   ```bash
-  git clone https://github.com/ugonfor/secure-coding
+  git clone https://github.com/ugonfor/secure-coding   (원본)
+  git clone  https://github.com/legendwon/securecoding.git
   conda env create -f enviroments.yaml
 Usage
 서버 실행
