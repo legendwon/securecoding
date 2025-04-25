@@ -13,7 +13,7 @@
 <form method="POST" action="{{ url_for('dashboard') }}">
   {{ form.hidden_tag() }}  <!-- CSRF 토큰을 숨겨서 추가 -->
     <label for="product_name">상품 이름:</label>
-    <input type="text" id="product_name" name="product_name" placeholder="상품 이름을 입력하세요">
+    <input type="text" id="product_name" name="product_name" placeholder="상품 이름을 입력하세요" value="{{ form.product_name.data }}">
     <button type="submit">검색</button>
 </form>
 
@@ -26,17 +26,13 @@
     </li>
   {% endfor %}
 </ul>
-<p>
-  <a href="{{ url_for('new_product') }}">새 상품 등록</a> |
-  <a href="{{ url_for('my_products') }}">내 상품 보러가기</a>
-</p>
 
 <!-- 사용자 검색 기능 -->
 <h3>사용자 검색</h3>
 <form method="POST" action="{{ url_for('dashboard') }}">
   {{ user_form.hidden_tag() }}  <!-- CSRF 토큰을 숨겨서 추가 -->
     <label for="username">사용자 이름:</label>
-    <input type="text" id="username" name="username" placeholder="사용자 이름을 입력하세요">
+    <input type="text" id="username" name="username" placeholder="사용자 이름을 입력하세요" value="{{ user_form.username.data }}">
     <button type="submit">검색</button>
 </form>
 
@@ -55,7 +51,7 @@
 <!-- 송금 폼 -->
 <h3>송금하기</h3>
 <form method="POST" action="{{ url_for('send_money') }}">
-  {{ csrf_token() }}  <!-- CSRF 토큰 추가 -->
+  {{ form.hidden_tag() }}  <!-- CSRF 토큰 추가 -->
     <label for="receiver_username">받는 사람 Username:</label>
     <input type="text" id="receiver_username" name="receiver_username" required>
     <label for="amount">송금액:</label>
