@@ -30,10 +30,15 @@ class UserSearchForm(FlaskForm):
     username = StringField('사용자 이름')
 
 
-
 class LoginForm(FlaskForm):
     username = StringField('Username')
     password = PasswordField('Password')
+
+class RegistrationForm(FlaskForm):
+    username = StringField('Username')
+    password = PasswordField('Password')
+
+
 
 app.config['SESSION_COOKIE_HTTPONLY'] = True
 app.config['SESSION_COOKIE_SECURE'] = True  # HTTPS 환경에서만 전송
@@ -269,9 +274,6 @@ def check_report_abuse(user_id):
 app.config['SECRET_KEY'] = 'your_secret_key'
 #csrf = CSRFProtect(app)
 
-class RegistrationForm(FlaskForm):
-    username = StringField('Username')
-    password = PasswordField('Password')
 
 
 # 기본 라우트
@@ -455,13 +457,16 @@ def register():
 # 로그인
 @app.route('/login', methods=['GET', 'POST'])
 def login():
-    if request.method == 'POST':
-        username = request.form['username']
-        password = request.form['password']
+    form = LoginForm()  # LoginForm 클래스 사용
+
+    if form.validate_on_submit():  # 폼이 제출되면 처리
+        username = form.username.data
+        password = form.password.data
 
         db = get_db()
         cursor = db.cursor()
-        # 비밀번호는 해시값만 가져와서 비교해야 함
+
+        # 사용자 확인
         cursor.execute("SELECT * FROM user WHERE username = ?", (username,))
         user = cursor.fetchone()
 
@@ -477,7 +482,8 @@ def login():
             flash('아이디 또는 비밀번호가 올바르지 않습니다.')
             return redirect(url_for('login'))
 
-    return render_template('login.html')
+    return render_template('login.html', form=form)
+
 # 로그아웃
 @app.route('/logout')
 def logout():
@@ -802,7 +808,6 @@ def send_private_message(data):
 @app.errorhandler(500)
 def internal_error(error):
     return "Internal Server Error. Please try again later.", 500
-
 
 
 
